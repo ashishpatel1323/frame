@@ -5,7 +5,7 @@ import 'package:photos/core/cache/lru_map.dart';
 import 'package:photos/models/file.dart';
 
 class FileLruCache {
-  static LRUMap<String, dart.File> _map = LRUMap(25);
+  static LRUMap<String, dart.File> _map = LRUMap(10);
 
   static dart.File get(File file) {
     return _map.get(file.tag());
@@ -17,7 +17,7 @@ class FileLruCache {
 }
 
 class BytesLruCache {
-  static LRUMap<String, Uint8List> _map = LRUMap(25);
+  static LRUMap<String, Uint8List> _map = LRUMap(10);
 
   static Uint8List get(File file) {
     return _map.get(file.tag());
