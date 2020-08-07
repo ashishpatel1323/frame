@@ -96,8 +96,7 @@ class _DeviceFolderGalleryWidgetState extends State<DeviceFolderGalleryWidget> {
             ? "Shanthy's Camera"
             : "Santorini";
       }
-      folders.add(
-          DeviceFolder(folderName, path, file, FolderNameFilter(path)));
+      folders.add(DeviceFolder(folderName, path, file, FolderNameFilter(path)));
     }
     folders.sort((first, second) {
       return second.thumbnail.creationTime
@@ -123,9 +122,7 @@ class _DeviceFolderGalleryWidgetState extends State<DeviceFolderGalleryWidget> {
         children: <Widget>[
           Container(
             child: Hero(
-                tag: (widget.isRemote ? "remote_folder:" : "device_folder:") +
-                    folder.path +
-                    folder.thumbnail.tag(),
+                tag: "device_folder:" + folder.path + folder.thumbnail.tag(),
                 child: ThumbnailWidget(folder.thumbnail)),
             height: 150,
             width: 150,
