@@ -40,7 +40,8 @@ class File {
     file.localId = asset.id;
     file.title = asset.title;
     file.deviceFolder = pathEntity.name;
-    file.location = Location(asset.latitude, asset.longitude);
+    final latLong = await asset.latlngAsync();
+    file.location = Location(latLong.latitude, latLong.longitude);
     switch (asset.type) {
       case AssetType.image:
         file.fileType = FileType.image;
