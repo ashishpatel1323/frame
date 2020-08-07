@@ -34,7 +34,9 @@ class HomeWidget extends StatefulWidget {
 class _HomeWidgetState extends State<HomeWidget> {
   static final importantItemsFilter = ImportantItemsFilter();
   final _logger = Logger("HomeWidgetState");
-  final _remoteFolderGalleryWidget = RemoteFolderGalleryWidget();
+  final _remoteFolderGalleryWidget = DeviceFolderGalleryWidget(
+    isRemote: true,
+  );
   final _deviceFolderGalleryWidget = DeviceFolderGalleryWidget();
   final _selectedFiles = SelectedFiles();
   final _memoriesWidget = MemoriesWidget();

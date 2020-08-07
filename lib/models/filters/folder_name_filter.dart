@@ -9,6 +9,6 @@ class FolderNameFilter implements GalleryItemsFilter {
 
   @override
   bool shouldInclude(File file) {
-    return path.basename(file.deviceFolder) == folderName;
+    return file.deviceFolder == folderName;
   }
 }

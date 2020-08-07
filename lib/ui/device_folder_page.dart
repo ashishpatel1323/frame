@@ -10,8 +10,10 @@ import 'package:photos/ui/gallery_app_bar_widget.dart';
 
 class DeviceFolderPage extends StatefulWidget {
   final DeviceFolder folder;
+  final bool isRemote;
 
-  const DeviceFolderPage(this.folder, {Key key}) : super(key: key);
+  const DeviceFolderPage(this.folder, {this.isRemote = false, Key key})
+      : super(key: key);
 
   @override
   _DeviceFolderPageState createState() => _DeviceFolderPageState();
@@ -25,7 +27,8 @@ class _DeviceFolderPageState extends State<DeviceFolderPage> {
     var gallery = Gallery(
       syncLoader: () => _getFilteredFiles(FileRepository.instance.files),
       reloadEvent: Bus.instance.on<LocalPhotosUpdatedEvent>(),
-      tagPrefix: "device_folder:" + widget.folder.path,
+      tagPrefix: (widget.isRemote ? "remote_folder:" : "device_folder:") +
+          widget.folder.path,
       selectedFiles: _selectedFiles,
     );
     return Scaffold(

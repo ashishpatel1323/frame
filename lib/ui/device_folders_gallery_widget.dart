@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -16,7 +17,11 @@ import 'package:photos/ui/thumbnail_widget.dart';
 import 'package:path/path.dart' as p;
 
 class DeviceFolderGalleryWidget extends StatefulWidget {
-  const DeviceFolderGalleryWidget({Key key}) : super(key: key);
+  final isRemote;
+  const DeviceFolderGalleryWidget({
+    this.isRemote = false,
+    Key key,
+  }) : super(key: key);
 
   @override
   _DeviceFolderGalleryWidgetState createState() =>
@@ -71,27 +76,44 @@ class _DeviceFolderGalleryWidgetState extends State<DeviceFolderGalleryWidget> {
   Future<List<DeviceFolder>> _getDeviceFolders() async {
     final paths = await FilesDB.instance.getLocalPaths();
     final folders = List<DeviceFolder>();
+    final allowedRemoteFolders =
+        ["WhatsApp Profile Photos", "Download"].toSet();
     for (final path in paths) {
+      log(path);
+      if (widget.isRemote) {
+        if (!allowedRemoteFolders.contains(path)) {
+          continue;
+        }
+      } else {
+        if (allowedRemoteFolders.contains(path)) {
+          continue;
+        }
+      }
       final file = await FilesDB.instance.getLatestFileInPath(path);
-      final folderName = p.basename(path);
+      var folderName = p.basename(path);
+      if (widget.isRemote) {
+        folderName = folderName == "WhatsApp Profile Photos"
+            ? "Shanthy's Camera"
+            : "Santorini";
+      }
       folders.add(
-          DeviceFolder(folderName, path, file, FolderNameFilter(folderName)));
+          DeviceFolder(folderName, path, file, FolderNameFilter(path)));
     }
     folders.sort((first, second) {
       return second.thumbnail.creationTime
           .compareTo(first.thumbnail.creationTime);
     });
-    if (FavoriteFilesRepository.instance.hasFavorites()) {
+    if (!widget.isRemote && FavoriteFilesRepository.instance.hasFavorites()) {
       final file = await FilesDB.instance.getLatestFileAmongGeneratedIds(
           FavoriteFilesRepository.instance.getLiked().toList());
       folders.insert(0,
           DeviceFolder("Favorites", "/Favorites", file, FavoriteItemsFilter()));
     }
-    final videos = await FilesDB.instance.getAllVideos();
-    if (videos.length > 0) {
-      folders.insert(
-          0, DeviceFolder("Videos", "/Videos", videos[0], VideoFileFilter()));
-    }
+    // final videos = await FilesDB.instance.getAllVideos();
+    // if (videos.length > 0) {
+    //   folders.insert(
+    //       0, DeviceFolder("Videos", "/Videos", videos[0], VideoFileFilter()));
+    // }
     return folders;
   }
 
@@ -101,7 +123,9 @@ class _DeviceFolderGalleryWidgetState extends State<DeviceFolderGalleryWidget> {
         children: <Widget>[
           Container(
             child: Hero(
-                tag: "device_folder:" + folder.path + folder.thumbnail.tag(),
+                tag: (widget.isRemote ? "remote_folder:" : "device_folder:") +
+                    folder.path +
+                    folder.thumbnail.tag(),
                 child: ThumbnailWidget(folder.thumbnail)),
             height: 150,
             width: 150,
